@@ -155,7 +155,12 @@
       }
     }
     if (!found) return 'No report yet for ' + a + '. Be the first to report o.';
-    return found.area + ': ' + (found.status === 'out' ? 'no light.' : 'light dey.') + ' ' + timeAgo(found.created_at) + '.';
+    var recent = Date.now() - 2 * 3600 * 1000;
+    var same = reports.filter(function (x) {
+      return x.kind === 'power' && x.area === found.area && x.status === found.status && new Date(x.created_at).getTime() > recent;
+    }).length;
+    var count = same > 1 ? ' ' + same + ' reports.' : '';
+    return found.area + ': ' + (found.status === 'out' ? 'no light.' : 'light dey.') + ' ' + timeAgo(found.created_at) + '.' + count;
   }
 
   function nearestArea(lat, lng) {
@@ -209,6 +214,19 @@
   }
 
   // ---------- Report ----------
+  // A random id for this phone, kept on the phone. The database uses it
+  // to stop one phone from posting too many reports. It holds no name or number.
+  function getDeviceId() {
+    var id = getStore('device');
+    if (id && id.length >= 8) return id;
+    try {
+      id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : '';
+    } catch (e) { id = ''; }
+    if (!id) id = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+    setStore('device', id);
+    return id;
+  }
+
   function fillReportAreas() {
     var sel = $('report-area');
     sel.textContent = '';
@@ -233,11 +251,17 @@
     if (!sb) { showNote($('sheet-note'), 'App no fit connect. Check your network.'); return; }
     showNote($('sheet-note'), 'Dey send...');
     sb.from('reports')
-      .insert({ kind: KIND[status], status: status, area: area, lat: a ? a.lat : null, lng: a ? a.lng : null })
-      .select()
+      .insert({ kind: KIND[status], status: status, area: area, lat: a ? a.lat : null, lng: a ? a.lng : null, device_id: getDeviceId() })
+      .select('id,kind,status,area,lat,lng,created_at')
       .single()
       .then(function (res) {
-        if (res.error || !res.data) { showNote($('sheet-note'), 'E no go. Check your network and try again.'); return; }
+        if (res.error || !res.data) {
+          var msg = (res.error && res.error.message) || '';
+          if (msg.indexOf('Already reported') !== -1) showNote($('sheet-note'), 'You don already report am. Wait small.');
+          else if (msg.indexOf('Too many') !== -1) showNote($('sheet-note'), 'You don report plenty. Try again later.');
+          else showNote($('sheet-note'), 'E no go. Check your network and try again.');
+          return;
+        }
         setStore(key, String(Date.now()));
         reports.unshift(res.data);
         drawMarkers();
