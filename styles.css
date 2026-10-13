@@ -94,5 +94,9 @@ h1 { margin: 2px 0 0 0; font-size: 22px; line-height: 1.15; font-weight: 800; }
 .opt.out { background: var(--amber); color: #1E1B13; }
 .opt.restored { background: #DDEFE3; color: #0B4A28; }
 
+/* Google Maps link */
+.gmaps-link { display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 12px; background: #fff; border: 2px solid #8F2323; color: #8F2323; font-size: 15px; font-weight: 800; text-decoration: none; padding: 0 14px; text-align: center; }
+.gmaps-link:focus-visible { outline: 3px solid #1B7FD0; outline-offset: 2px; }
+
 /* Leaflet tweaks */
 .leaflet-container { font-family: inherit; }

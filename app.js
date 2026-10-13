@@ -310,7 +310,18 @@
       if (!$('area-input').value && homeArea) $('area-input').value = homeArea;
     });
     $('go-traffic').addEventListener('click', function () {
-      showLines($('traffic-result'), trafficLines($('dest').value));
+      var dest = $('dest').value.trim();
+      showLines($('traffic-result'), trafficLines(dest));
+      if (dest) {
+        var a = document.createElement('a');
+        a.className = 'gmaps-link';
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.href = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=' +
+          encodeURIComponent(dest + ', Lagos, Nigeria');
+        a.textContent = 'See live traffic on Google Maps';
+        $('traffic-result').appendChild(a);
+      }
     });
     $('go-power').addEventListener('click', function () {
       selectPowerChip('');
