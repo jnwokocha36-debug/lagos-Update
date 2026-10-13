@@ -74,6 +74,7 @@
       el.appendChild(d);
     });
     el.hidden = false;
+    try { el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) { /* ignore */ }
   }
 
   // ---------- Map ----------
