@@ -1,0 +1,16 @@
+{
+  "name": "Lagos Traffic and NEPA Update",
+  "short_name": "Lagos Update",
+  "description": "Live traffic and light (NEPA) updates from people in Lagos.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F4F6F2",
+  "theme_color": "#0B6B3A",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

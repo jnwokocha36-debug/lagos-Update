@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lagos Traffic and NEPA Update</title>
+<meta name="description" content="Live traffic and light (NEPA) updates from people in Lagos.">
+<meta name="theme-color" content="#0B6B3A">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lagos Update">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ONBOARDING -->
+  <section id="onboarding" class="screen pad" hidden>
+    <div class="ob-top">
+      <div class="ob-brand">Lagos Traffic and NEPA Update</div>
+      <div class="ob-step" id="ob-step-label">Step 1 of 2</div>
+    </div>
+    <div class="progress"><span id="seg1" class="on"></span><span id="seg2"></span></div>
+
+    <div id="ob-1" class="ob-body">
+      <div class="ob-content">
+        <h2>Which area you dey?</h2>
+        <p class="lead">We go use am show you the light and traffic update wey concern you.</p>
+        <div id="ob-chips" class="chips"></div>
+        <label for="ob-route" class="small-label">Where you dey go often? (optional)</label>
+        <input id="ob-route" type="text" class="text-input" placeholder="e.g. Yaba, Lekki, Ikeja" autocomplete="off">
+      </div>
+      <button id="ob-next" class="btn primary">Continue</button>
+    </div>
+
+    <div id="ob-2" class="ob-body" hidden>
+      <div class="ob-content">
+        <h2>Put am for your home screen</h2>
+        <p class="lead">E go dey like normal app, e no go far.</p>
+        <div class="info-card">
+          <div class="info-tag">iPhone</div>
+          <div class="info-text">Tap the Share button in Safari, then tap Add to Home Screen.</div>
+        </div>
+        <div class="info-card">
+          <div class="info-tag">Android</div>
+          <div class="info-text">Tap the menu in Chrome, then tap Install app.</div>
+        </div>
+      </div>
+      <button id="ob-start" class="btn primary">Start</button>
+      <button id="ob-back" class="btn ghost">Back</button>
+    </div>
+  </section>
+
+  <!-- HOME -->
+  <main id="home" class="screen" hidden>
+    <header class="top">
+      <div class="eyebrow">Live for Lagos</div>
+      <h1>Lagos Traffic and NEPA Update</h1>
+    </header>
+
+    <div class="mapwrap"><div id="map" aria-label="Map of Lagos with recent reports"></div></div>
+
+    <div class="cards">
+      <section class="card">
+        <div class="card-tag"><span class="dot red"></span><span class="tag-text red-text">Traffic</span></div>
+        <div class="card-row">
+          <div class="card-text">How far? Where you wan go? Check if traffic dey road o</div>
+          <button id="btn-check-traffic" class="btn check red-btn" aria-expanded="false" aria-controls="panel-traffic">Check</button>
+        </div>
+        <div id="panel-traffic" class="panel" hidden>
+          <label for="dest" class="small-label">Where you wan go?</label>
+          <div class="input-row">
+            <input id="dest" type="text" class="text-input" placeholder="Type place, e.g. Lekki" autocomplete="off">
+            <button id="go-traffic" class="btn dark go">Go</button>
+          </div>
+          <div id="traffic-result" class="result red-result" hidden></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-tag"><span class="dot amber"></span><span class="tag-text amber-text">NEPA</span></div>
+        <div class="card-row">
+          <div class="card-text">You sure say una get light? Check now o, so you go know if you go branch buy fuel.</div>
+          <button id="btn-check-power" class="btn check amber-btn" aria-expanded="false" aria-controls="panel-power">Check</button>
+        </div>
+        <div id="panel-power" class="panel" hidden>
+          <label for="area-input" class="small-label">Which area you dey?</label>
+          <div class="input-row">
+            <input id="area-input" type="text" class="text-input" placeholder="Type your area, e.g. Ajah" autocomplete="off">
+            <button id="go-power" class="btn dark go">Go</button>
+          </div>
+          <div class="small-label">Or pick one</div>
+          <div id="power-chips" class="chips"></div>
+          <div id="power-result" class="result amber-result" hidden></div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="bottom">
+      <button id="btn-report" class="btn primary report">Report give others</button>
+      <div id="note" class="note" hidden></div>
+    </footer>
+  </main>
+
+  <!-- REPORT SHEET -->
+  <div id="sheet" class="overlay" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+      <h2 id="sheet-title">Wetin you see?</h2>
+      <label for="report-area" class="small-label">Which area?</label>
+      <select id="report-area" class="text-input"></select>
+      <div class="opt-grid">
+        <button class="opt jam" data-status="jam">Road don jam</button>
+        <button class="opt free" data-status="free">Road dey free</button>
+        <button class="opt out" data-status="out">Light don go</button>
+        <button class="opt restored" data-status="restored">Light don come</button>
+      </div>
+      <div id="sheet-note" class="note" hidden></div>
+      <button id="sheet-cancel" class="btn light">Cancel</button>
+    </div>
+  </div>
+
+  <!-- THANKS -->
+  <div id="thanks" class="overlay" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="thanks-title">
+      <h2 id="thanks-title"></h2>
+      <p id="thanks-sub" class="lead"></p>
+      <button id="thanks-close" class="btn primary">Back to map</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
